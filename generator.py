@@ -12,7 +12,6 @@ import numpy as np
 import pickle
 import threading
 from joblib import load
-from model import ScaledIsolationForest
 
 app = Flask(__name__)
 
@@ -38,7 +37,7 @@ def index_post():
     result_str = "Anomaly" if prediction[0] == -1 else "Normal"
     result = json.dumps(
         {
-            "input_data": data,
+            "input_data": data["sensor_data"],
             "prediction": result_str,
             "anomaly_score": str(prediction),
             "percent": str(percent),
