@@ -1,0 +1,46 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensor Fault Detection</title>
+</head>
+<body>
+    <ul id="data"></ul>
+    <script>
+        setInterval(loop, 5000);
+        const url = "http://localhost:5000"
+        <!-- 'https://sensor-fault-detection-dg6k.onrender.com/simulate' -->
+
+        async function get_simulation() {
+              const response = await fetch(url+"/simulate");
+              const data = await response.json();
+              return data.simulated_data;
+        }
+        async function get_sensor_data(array) {
+            const response = await fetch(url +'/sensors', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ sensor_data: array }),
+            });
+            const data = await response.json();
+            console.log(data)
+            return data.sensor_data;
+        }
+        async function loop(){
+          const sim_data = await get_simulation();
+          const sensor_prediction = await get_sensor_data(sim_data);
+          const arrayList = document.getElementById('data');
+          const listItem = document.createElement('li');
+          const json_string =JSON.stringify(sensor_prediction,null,2);
+          console.log(json_string,sensor_prediction);
+          listItem.innerText = JSON.stringify(sensor_prediction,null,2);
+          arrayList.appendChild(listItem);
+        }
+
+    </script>
+</body>
+</html>
