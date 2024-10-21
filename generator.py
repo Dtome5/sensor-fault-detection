@@ -18,41 +18,13 @@ app = Flask(__name__)
 
 model = pickle.load(open("model.sav", "rb"))
 
-
-def logf(x, alfa=10):
-    return 1 / (1 + np.exp(-alfa * x))
-
-
-def anomaly_pct(scores):
-    print(f"{0.2/logf(scores)}]\n")
-    # Shift scores to positive range (0, 2)
-    scores_shifted = scores + 1
-    # Scale to (0, 100)
-    return 100 * (1 - scores_shifted / 2)
-
-
-def prob_score(score):
-    # The 'max_score' is typically close to 0.5 for Isolation Forests
-    max_score = 0.5
-    min_score = -max_score  # Assuming symmetrical distribution around 0
-
-    # Normalize the score to [0, 1] range
-    normalized_score = (score - min_score) / (max_score - min_score)
-
-    # Clip the value to ensure it's in [0, 1]
-    normalized_score = max(0, min(1, normalized_score))
-
-    # Convert to outlier probability (1 - inlier probability)
-    return 1 - normalized_score
-
-
 # function for generating predictions
 def pred_model(y):
     loaded_model = load("model.joblib")
     scaler = load("scaler.joblib")
-    score = load("score.joblib")
+    score = load("score_scaler.joblib")
     scaled_data = scaler.transform([y])
-    percentages = score.get_scaled_score(scaled_data)
+    percentages = 100 - score.transform(loaded_model.decision_function(scaled_data).reshape(1,-1))
     print(loaded_model.decision_function(scaled_data))
     return loaded_model.predict(scaled_data), percentages
 
@@ -64,13 +36,13 @@ def index_post():
     sensor_data = data["sensor_data"]
     prediction, percent = pred_model(sensor_data)
     result_str = "Anomaly" if prediction[0] == -1 else "Normal"
-    result = jsonify(
+    result = json.dumps(
         {
-            "input_data": data["sensor_data"],
+            "input_data": data,
             "prediction": result_str,
             "anomaly_score": str(prediction),
             "percent": str(percent),
-        }
+        },indent= 2
     )
     print(result)
     return result
