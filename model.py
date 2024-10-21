@@ -48,7 +48,7 @@ kfold = model_selection.KFold(shuffle=True, random_state=0)
 accuracy = model_selection.cross_val_score(model, x, y=y, cv=kfold, scoring="accuracy")
 recall = recall_score(y_test,y_pred)
 precision = precision_score(y_test,y_pred)
-# print(f"accuracy: {accuracy.mean()}\nprecision: {precision}\n recall: {recall}")
+print(f"accuracy: {accuracy.mean()}\nprecision: {precision}\n recall: {recall}")
 
 predictions =model.decision_function(x)
 min_max = MinMaxScaler(feature_range = (0,100))
