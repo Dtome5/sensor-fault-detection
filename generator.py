@@ -15,7 +15,6 @@ from joblib import load
 
 app = Flask(__name__)
 
-model = pickle.load(open("model.sav", "rb"))
 
 # function for generating predictions
 def pred_model(y):
