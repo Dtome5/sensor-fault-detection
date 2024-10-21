@@ -12,8 +12,11 @@ import numpy as np
 import pickle
 import threading
 from joblib import load
+from flask_cors import CORS
 
 app = Flask(__name__)
+
+CORS(app)
 
 
 # function for generating predictions
@@ -22,8 +25,9 @@ def pred_model(y):
     scaler = load("scaler.joblib")
     score = load("score_scaler.joblib")
     scaled_data = scaler.transform([y])
-    percentages = 100 - score.transform(loaded_model.decision_function(scaled_data).reshape(1,-1))
-    print(loaded_model.decision_function(scaled_data))
+    percentages = 100 - score.transform(
+        loaded_model.decision_function(scaled_data).reshape(1, -1)
+    )
     return loaded_model.predict(scaled_data), percentages
 
 
@@ -34,21 +38,26 @@ def index_post():
     sensor_data = data["sensor_data"]
     prediction, percent = pred_model(sensor_data)
     result_str = "Anomaly" if prediction[0] == -1 else "Normal"
-    result = json.dumps(
-        {
+    result = {
+        "sensor_data": {
             "input_data": data["sensor_data"],
             "prediction": result_str,
-            "anomaly_score": str(prediction),
-            "percent": str(percent),
-        },indent= 2
-    )
+            "percent": percent[0][0],
+        }
+    }
     print(result)
     return result
 
 
-# @app.route("/")
-# def index():
-#     return render_template("home.html")
+@app.route("/")
+def index():
+    return render_template("home.html")
+
+
+@app.route("/simulate")
+def index_simulate():
+    simulated_data = simulate()
+    return {"simulated_data": simulated_data}
 
 
 def fault(temp, hum, dec):
@@ -95,31 +104,31 @@ def simulate(fault=False):
 
 
 # posts data to url
-def send_data(url, data):
-    payload = {"sensor_data": data}
-    try:
-        response = requests.post(url, json=payload)
-        response.raise_for_status()  # Raise an exception for bad status codes
-        print(f"Sent data: {data}")
-        print(f"Received response: {response.json()}")
-        print(f"Response text:{response.text}")
-    except requests.exceptions.RequestException as e:
-        print(f"Error sending data: {e}")
+# def send_data(url, data):
+#     payload = {"sensor_data": data}
+#     try:
+#         response = requests.post(url, json=payload)
+#         response.raise_for_status()  # Raise an exception for bad status codes
+#         print(f"Sent data: {data}")
+#         print(f"Received response: {response.json()}")
+#         print(f"Response text:{response.text}")
+#     except requests.exceptions.RequestException as e:
+#         print(f"Error sending data: {e}")
 
 
-def main():
-    api_url = "http://127.0.0.1:5000/sensors"
-    sensor_data = simulate()
-    no_requests = 100
-    for i in range(no_requests):
-        sensor_data = simulate()
-        time.sleep(2)
-        send_data(api_url, sensor_data)
+# def main():
+# api_url = "http://127.0.0.1:5000/sensors"
+# sensor_data = simulate()
+# no_requests = 10
+# for i in range(no_requests):
+#     sensor_data = simulate()
+#     time.sleep(2)
+#     send_data(api_url, sensor_data)
 
 
-threads = threading.Thread(target=main, daemon=True)
+# threads = threading.Thread(target=main, daemon=True)
 if __name__ == "__main__":
-    threads.start()
+    # threads.start()
     app.run()
 """
 df = pd.DataFrame(simulate())
