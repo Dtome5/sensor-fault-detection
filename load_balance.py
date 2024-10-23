@@ -21,7 +21,7 @@ def get_next_server():
     return server
 
 
-@app.route("/balance", methods=["POST", "GET"])
+@app.route("/", methods=["POST", "GET"])
 def load_balance():
     """Main load balancer route, forwards requests to one of the backend servers."""
     target_server = get_next_server()

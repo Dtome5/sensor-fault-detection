@@ -11,7 +11,7 @@
   <table id="table" border="1">
     <thead>
       <tr>
-      <th>id<th>
+        <th>id</th>
         <th>temperature</th>
         <th>humidity</th>
         <th>loudness</th>
@@ -46,11 +46,12 @@
     async function loop() {
       const sim_data = await get_simulation();
       const {
+        id,
         temperature,
         humidity,
         loudness,
         prediction,
-        percent,
+        anomaly_score,
       } = await get_sensor_data(sim_data);
 
       const list_element = document.getElementById('data');
@@ -58,7 +59,7 @@
 
 
       let row = table.insertRow();
-      [temperature + " °C", humidity + '%', loudness + ' db', prediction, +(percent).toFixed(3)+'%'].forEach(c => {
+      [id +"",temperature + " °C", humidity + '%', loudness + ' db', prediction, +(anomaly_score).toFixed(3)+'%'].forEach(c => {
         let cell = row.insertCell();
         cell.textContent = c;
       })
