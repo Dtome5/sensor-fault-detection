@@ -84,4 +84,4 @@ def index_post():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(port=os.getenv("PORT"))
