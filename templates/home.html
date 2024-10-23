@@ -1,46 +1,75 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sensor Fault Detection</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sensor Fault Detection</title>
 </head>
+
 <body>
-    <ul id="data"></ul>
-    <script>
-        setInterval(loop, 5000);
-        const url = "http://localhost:5000"
-        <!-- 'https://sensor-fault-detection-dg6k.onrender.com/simulate' -->
+  <table id="table" border="1">
+    <thead>
+      <tr>
+      <th>id<th>
+        <th>temperature</th>
+        <th>humidity</th>
+        <th>loudness</th>
+        <th>prediction</th>
+        <th>anomaly score</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
 
-        async function get_simulation() {
-              const response = await fetch(url+"/simulate");
-              const data = await response.json();
-              return data.simulated_data;
-        }
-        async function get_sensor_data(array) {
-            const response = await fetch(url +'/sensors', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ sensor_data: array }),
-            });
-            const data = await response.json();
-            console.log(data)
-            return data.sensor_data;
-        }
-        async function loop(){
-          const sim_data = await get_simulation();
-          const sensor_prediction = await get_sensor_data(sim_data);
-          const arrayList = document.getElementById('data');
-          const listItem = document.createElement('li');
-          const json_string =JSON.stringify(sensor_prediction,null,2);
-          console.log(json_string,sensor_prediction);
-          listItem.innerText = JSON.stringify(sensor_prediction,null,2);
-          arrayList.appendChild(listItem);
-        }
+  <script>
+    const url = "{{url}}"
 
-    </script>
+    async function get_simulation() {
+      const response = await fetch(url + "/simulate");
+      const data = await response.json();
+      return data.simulated_data;
+    }
+    async function get_sensor_data(array) {
+      const response = await fetch(url + '/sensors', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sensor_data: array }),
+      });
+      const data = await response.json();
+      return data.sensor_data;
+    }
+
+    const table = document.getElementById('table').getElementsByTagName('tbody')[0];
+
+    async function loop() {
+      const sim_data = await get_simulation();
+      const {
+        temperature,
+        humidity,
+        loudness,
+        prediction,
+        percent,
+      } = await get_sensor_data(sim_data);
+
+      const list_element = document.getElementById('data');
+      const list_item = document.createElement('li');
+
+
+      let row = table.insertRow();
+      [temperature + " °C", humidity + '%', loudness + ' db', prediction, +(percent).toFixed(3)+'%'].forEach(c => {
+        let cell = row.insertCell();
+        cell.textContent = c;
+      })
+
+      list_item.innerText = JSON.stringify(sensor_prediction, null, 2);
+      list_element.appendChild(list_item);
+    }
+
+    setInterval(loop, 2000);
+
+  </script>
 </body>
+
 </html>

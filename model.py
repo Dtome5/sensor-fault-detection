@@ -1,15 +1,19 @@
-# from numpy.random.mtrand import logistic
+import json
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.ensemble import IsolationForest
-from sklearn.metrics import classification_report, confusion_matrix,precision_score,recall_score
+from sklearn.metrics import (
+    classification_report,
+    confusion_matrix,
+    precision_score,
+    recall_score,
+)
 from sklearn import model_selection
 from joblib import dump
 import mlflow.sklearn
-import pickle
 
 # loads data from csv
 data = pd.read_csv("sim_data.csv", index_col=False)
@@ -38,27 +42,37 @@ model.fit(x_train, y_train)
 # testing model
 y_pred = model.predict(x_test)
 
-# the models confusion matrix
+# confusion matrix
 cnf_matrix = confusion_matrix(
     np.array(list(map(lambda x: 1 if x == False else -1, y_test))), y_pred
 )
 y = np.array(list(map(lambda x: 1 if x == False else -1, y)))
+
 y_test = np.array(list(map(lambda x: 1 if x == False else -1, y_test)))
+
 kfold = model_selection.KFold(shuffle=True, random_state=0)
+
 accuracy = model_selection.cross_val_score(model, x, y=y, cv=kfold, scoring="accuracy")
-recall = recall_score(y_test,y_pred)
-precision = precision_score(y_test,y_pred)
+
+recall = recall_score(y_test, y_pred)
+
+precision = precision_score(y_test, y_pred)
+
 print(f"accuracy: {accuracy.mean()}\nprecision: {precision}\n recall: {recall}")
 
-predictions =model.decision_function(x)
-min_max = MinMaxScaler(feature_range = (0,100))
-min_max.fit(predictions.reshape(-1,1))
-# print(cnf_matrix)
-# print(y_pred)
-# print(x_train)
+predictions = model.decision_function(x)
+min_max = MinMaxScaler(feature_range=(0, 100))
+min_max.fit(predictions.reshape(-1, 1))
 
-# save model to file
+results = {
+    "precision": precision_score(y_test, y_pred),
+    "recall": recall_score(y_test, y_pred),
+    "accuaracy": accuracy.mean(),
+}
+
+with open("results.txt", "w") as result:
+    result.write(json.dumps(results, indent=2))
+
 dump(model, "model.joblib")
 dump(scaler, "scaler.joblib")
 dump(min_max, "score_scaler.joblib")
-
