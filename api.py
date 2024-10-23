@@ -20,9 +20,9 @@ id = 0
 print(os.getenv("PROD"))
 url = (
     # config["api_url"]
-    "https://sensor-fault-detection-dg6k.onrender.com/"
-    # if os.getenv("PROD").lower() == "yes"
-    # else "http://localhost:5000"
+    os.getenv("PROD")
+    if os.getenv("PROD")
+    else "http://localhost:5000"
 )
 
 loaded_model = load(config["model"])
