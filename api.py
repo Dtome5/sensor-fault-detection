@@ -17,7 +17,7 @@ cur.execute(
     "CREATE TABLE IF NOT EXISTS Data(Id,Temperature,Humidity,Loudness,Prediction,AnomalyScore )"
 )
 id = 0
-print(os.getenv("PROD"))
+print(os.getenv("PROD"), os.getenv("PORT"))
 local_url = "http://localhost:5000"
 url = (
     # config["api_url"]
@@ -85,4 +85,4 @@ def index_post():
 
 
 if __name__ == "__main__":
-    app.run(port=int(os.getenv("PORT")) if bool(os.getenv("PORT")) else 5000)
+    app.run(port=os.getenv("PORT") if bool(os.getenv("PORT")) else 5000)
