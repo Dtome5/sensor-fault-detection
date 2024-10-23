@@ -20,8 +20,8 @@ id = 0
 print(os.getenv("PROD"))
 url = (
     # config["api_url"]
-    os.getenv("PROD")
-    if os.getenv("PROD")
+    os.getenv("URL")
+    if bool(os.getenv("URL"))
     else "http://localhost:5000"
 )
 
