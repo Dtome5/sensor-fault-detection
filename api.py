@@ -1,5 +1,6 @@
 import json
 import os
+import sqlite3
 from generator import simulate
 from joblib import load
 from flask import Flask, render_template, request, jsonify
@@ -10,15 +11,22 @@ with open("config.json") as config_file:
     config = json.load(config_file)
 CORS(app)
 
+con = sqlite3.connect("database.db", check_same_thread=False)
+cur = con.cursor()
+cur.execute(
+    "CREATE TABLE IF NOT EXISTS Data(Id,Temperature,Humidity,Loudness,Prediction,AnomalyScore )"
+)
+id = 0
 url = (
     config["api_url"]
+    # "https://sensor-fault-detection-dg6k.onrender.com/simulate"
     if os.getenv("PROD", "no").lower() == "yes"
     else "http://localhost:5000"
 )
 
-loaded_model = load("model.joblib")
-scaler = load("scaler.joblib")
-score_scaler = load("score_scaler.joblib")
+loaded_model = load(config["model"])
+scaler = load(config["scaler"])
+score_scaler = load(config["score scaler"])
 
 
 # generates predictions
@@ -37,17 +45,28 @@ def index():
 
 @app.route("/simulate")
 def index_simulate():
-    simulated_data = simulate()
+    global id
+    id += 1
+    simulated_data = simulate() + [id]
     return jsonify({"simulated_data": simulated_data})
 
 
 @app.route("/sensors", methods=["POST"])
 def index_post():
+    # global id
     data = request.json
     sensor_data = data["sensor_data"]
-    predictions, anomaly_score = prediction(sensor_data)
+    temperature = sensor_data[0]
+    humidity = sensor_data[1]
+    loudness = sensor_data[2]
+    predictions, anomaly_score = prediction(sensor_data[:3])
     result_str = "Anomaly" if predictions[0] == -1 else "Normal"
     print(sensor_data)
+    print(anomaly_score)
+    cur.execute(
+        "INSERT INTO Data VALUES(?,?,?,?,?,?)",
+        (id, temperature, humidity, loudness, result_str, int(anomaly_score[0][0])),
+    )
     response = {
         "sensor_data": {
             "id": id,
@@ -55,11 +74,12 @@ def index_post():
             "humidity": sensor_data[1],
             "loudness": sensor_data[2],
             "prediction": result_str,
-            "percent": anomaly_score[0][0],
+            "anomaly_score": anomaly_score[0][0],
         }
     }
 
     json.dumps(response, indent=2)
+    con.commit()
 
     return jsonify(response)
 
