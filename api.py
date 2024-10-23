@@ -18,11 +18,12 @@ cur.execute(
 )
 id = 0
 print(os.getenv("PROD"))
+local_url = "http://localhost:5000"
 url = (
     # config["api_url"]
     os.getenv("URL")
     if bool(os.getenv("URL"))
-    else "http://localhost:5000"
+    else local_url
 )
 
 loaded_model = load(config["model"])
@@ -84,4 +85,4 @@ def index_post():
 
 
 if __name__ == "__main__":
-    app.run(port=os.getenv("PORT"))
+    app.run(port=int(os.getenv("PORT")) if bool(os.getenv("PORT")) else 5000)
