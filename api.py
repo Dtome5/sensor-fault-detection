@@ -17,11 +17,12 @@ cur.execute(
     "CREATE TABLE IF NOT EXISTS Data(Id,Temperature,Humidity,Loudness,Prediction,AnomalyScore )"
 )
 id = 0
+print(os.getenv("PROD"))
 url = (
-    config["api_url"]
-    # "https://sensor-fault-detection-dg6k.onrender.com/simulate"
-    if os.getenv("PROD", "no").lower() == "yes"
-    else "http://localhost:5000"
+    # config["api_url"]
+    "https://sensor-fault-detection-dg6k.onrender.com/"
+    # if os.getenv("PROD").lower() == "yes"
+    # else "http://localhost:5000"
 )
 
 loaded_model = load(config["model"])
@@ -61,8 +62,6 @@ def index_post():
     loudness = sensor_data[2]
     predictions, anomaly_score = prediction(sensor_data[:3])
     result_str = "Anomaly" if predictions[0] == -1 else "Normal"
-    print(sensor_data)
-    print(anomaly_score)
     cur.execute(
         "INSERT INTO Data VALUES(?,?,?,?,?,?)",
         (id, temperature, humidity, loudness, result_str, int(anomaly_score[0][0])),

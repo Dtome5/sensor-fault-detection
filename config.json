@@ -1,5 +1,5 @@
 {
-  "api_url": "https://sensor-fault-detection-dg6k.onrender.com/simulate",
+  "api_url": "https://sensor-fault-detection-dg6k.onrender.com/",
   "model":"model.joblib",
   "scaler":"scaler.joblib",
   "score scaler":"score_scaler.joblib"
