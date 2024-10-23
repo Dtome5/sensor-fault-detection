@@ -85,4 +85,4 @@ def index_post():
 
 
 if __name__ == "__main__":
-    app.run(port=int(os.getenv("PORT")) if bool(os.getenv("PORT")) else 5000)
+    app.run(port=int(os.getenv("PORT", 10000)))
