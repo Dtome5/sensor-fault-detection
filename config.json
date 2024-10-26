@@ -2,6 +2,6 @@
   "api_url": "https://sensor-fault-detection-dg6k.onrender.com/",
   "model":"model.joblib",
   "scaler":"scaler.joblib",
-  "score scaler":"score_scaler.joblib"
-
+  "score scaler":"score_scaler.joblib",
+  "batch size":5000
 }

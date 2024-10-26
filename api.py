@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 import sqlite3
 from generator import simulate
 from joblib import load
@@ -16,9 +17,9 @@ cur = con.cursor()
 cur.execute(
     "CREATE TABLE IF NOT EXISTS Data(Id,Temperature,Humidity,Loudness,Prediction,AnomalyScore )"
 )
-id = 0
+# id = 0
 print(os.getenv("PROD"), os.getenv("PORT"))
-local_url = "http://localhost:5000"
+local_url = f"http://localhost:{sys.argv[1]}"
 url = (
     # config["api_url"]
     os.getenv("URL")
@@ -47,9 +48,9 @@ def index():
 
 @app.route("/simulate")
 def index_simulate():
-    global id
-    id += 1
-    simulated_data = simulate() + [id]
+    # global id
+    # id += 1
+    simulated_data = simulate()  #  + [id]
     return jsonify({"simulated_data": simulated_data})
 
 
@@ -63,13 +64,13 @@ def index_post():
     loudness = sensor_data[2]
     predictions, anomaly_score = prediction(sensor_data[:3])
     result_str = "Anomaly" if predictions[0] == -1 else "Normal"
-    cur.execute(
-        "INSERT INTO Data VALUES(?,?,?,?,?,?)",
-        (id, temperature, humidity, loudness, result_str, int(anomaly_score[0][0])),
-    )
+    # cur.execute(
+    #     "INSERT INTO Data VALUES(?,?,?,?,?,?)",
+    #     (id, temperature, humidity, loudness, result_str, int(anomaly_score[0][0])),
+    # )
     response = {
         "sensor_data": {
-            "id": id,
+            # "id": id,
             "temperature": sensor_data[0],
             "humidity": sensor_data[1],
             "loudness": sensor_data[2],
@@ -79,10 +80,10 @@ def index_post():
     }
 
     json.dumps(response, indent=2)
-    con.commit()
+    # con.commit()
 
     return jsonify(response)
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.getenv("PORT", 10000)))
+    app.run(host="0.0.0.0", port=int(os.getenv("PORT", int(sys.argv[1]))))

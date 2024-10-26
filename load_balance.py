@@ -1,14 +1,19 @@
 from flask import Flask, request, jsonify
+import sys, os
 import requests
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
 # List of backend servers
-backend_servers = [
-    "https://sensor-fault-detection-dg6k.onrender.com",  # Backend server 1
-    "https://sensor-fault-detection-1.onrender.com",  # Backend server 3
-]
+backend_servers = (
+    [
+        "https://sensor-fault-detection-dg6k.onrender.com",  # Backend server 1
+        "https://sensor-fault-detection-1.onrender.com",  # Backend server 3
+    ]
+    if bool(os.getenv("URL"))
+    else ["http://localhost:5001", "http://localhost:5002"]
+)
 
 # Index to keep track of the round-robin rotation
 server_index = 0
@@ -18,7 +23,8 @@ def get_next_server():
     """Simple round-robin logic to get the next server."""
     global server_index
     server = backend_servers[server_index]
-    server_index = (server_index + 1) % len(backend_servers)  # Rotate index
+    server_index = (server_index + 1) % len(backend_servers)
+    print(f"{server_index}, {backend_servers}")  # Rotate index
     return server
 
 
@@ -66,4 +72,4 @@ def load_balance():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    app.run(host="0.0.0.0", port=int(os.getenv("PORT", int(sys.argv[1]))))

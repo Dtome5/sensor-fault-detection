@@ -25,6 +25,7 @@
 
   <script>
     const url = "{{url}}"
+    var id= 0
 
     async function get_simulation() {
       const response = await fetch(url + "/simulate");
@@ -46,7 +47,6 @@
     async function loop() {
       const sim_data = await get_simulation();
       const {
-        id,
         temperature,
         humidity,
         loudness,
@@ -54,9 +54,9 @@
         anomaly_score,
       } = await get_sensor_data(sim_data);
 
-      const list_element = document.getElementById('data');
-      const list_item = document.createElement('li');
-
+      <!-- const table_element = document.getElementById('data'); -->
+      <!-- const list_item = document.createElement('li'); -->
+      id+=1
 
       let row = table.insertRow();
       [id +"",temperature + " °C", humidity + '%', loudness + ' db', prediction, +(anomaly_score).toFixed(3)+'%'].forEach(c => {
@@ -64,8 +64,8 @@
         cell.textContent = c;
       })
 
-      list_item.innerText = JSON.stringify(sensor_prediction, null, 2);
-      list_element.appendChild(list_item);
+      <!-- list_item.innerText = JSON.stringify(anomaly_score, null, 2); -->
+      <!-- table_element.appendChild(list_item); -->
     }
 
     setInterval(loop, 2000);
