@@ -43,11 +43,17 @@ cd sensor-fault-detection
 ```bash
 pip install requirements.txt
 ```
+## Files Description
 
+- `model.py`: Trains and saves the machine learning model
+- `api.py`: Flask server for processing sensor data
+- `processes.py`: Manages multiple server instances
+- `load_balance.py`: Implements round-robin load balancing
+- `generator.py`: Generates simulated sensor data
 
 ## Configuration
 
-1. The `config.json` file has the following structure:
+1. The `config.json` file can be used to select which model is used in the joblib format:
 ```json
 {
   "model": "model.joblib",
@@ -55,11 +61,6 @@ pip install requirements.txt
   "score scaler": "score_scaler.joblib"
 }
 ```
-
-2. Environment Variables (optional):
-- `PROD`: Production environment flag
-- `PORT`: Server port number
-- `URL`: Backend server URL
 
 ## Usage
 
@@ -77,6 +78,15 @@ This will create:
 - `score_scaler.joblib`: MinMaxScaler for anomaly scores
 - `results.txt`: Model performance metrics
 
+## Performance Metrics
+
+The model's performance metrics include:
+- Accuracy:0.95
+- Precision:0.95
+- Recall: ~1
+
+These metrics are saved in `results.txt` after training.
+
 ### Starting the System
 
 Launch the system using the processes script:
@@ -88,62 +98,9 @@ python processes.py
 This will start:
 - Two API servers on ports 5001 and 5002
 - Load balancer on port 5000
+- The results can be visualized locally on http://127.0.0.1:5000/
 
-### API Endpoints
-
-1. Root endpoint:
-```
-GET /
-```
-Returns the home page
-
-2. Simulation endpoint:
-```
-GET /simulate
-```
-Returns simulated sensor data
-
-3. Sensor data processing:
-```
-POST /sensors
-{
-    "sensor_data": [temperature, humidity, loudness]
-}
-```
-Returns prediction results including:
-- Prediction (Normal/Anomaly)
-- Anomaly score
-- Sensor readings
-
-## Data Format
-
-Sensor data should be provided as an array with three values:
-1. Temperature (°C): Expected range 20-50
-2. Humidity (%): Expected range 30-70
-3. Loudness (dB): Expected range 60-100
-
-Values outside these ranges are more likely to be classified as anomalies.
-
-## Development
-
-The system can be run in development mode using local URLs by not setting the `URL` environment variable. For production, set the appropriate environment variables and update the backend server URLs in `load_balance.py`.
 ## Cloud
 To use in cloud open the sites https://sensor-fault-detection-1.onrender.com and https://sensor-fault-detection-dg6k.onrender.com/ and open https://sensor-fault-detection-2.onrender.com the load balancer. Reload to redirect the load balancer to a different instance
 
-## Files Description
-
-- `model.py`: Trains and saves the machine learning model
-- `api.py`: Flask server for processing sensor data
-- `processes.py`: Manages multiple server instances
-- `load_balance.py`: Implements round-robin load balancing
-- `generator.py`: Generates simulated sensor data
-
-## Performance Metrics
-
-The model's performance metrics include:
-- Accuracy:0.95
-- Precision:0.95
-- Recall: ~1
-
-These metrics are saved in `results.txt` after training.
 
