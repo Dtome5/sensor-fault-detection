@@ -68,11 +68,12 @@ results = {
     "precision": precision_score(y_test, y_pred),
     "recall": recall_score(y_test, y_pred),
     "accuaracy": accuracy.mean(),
+    "confusion_matrix": cnf_matrix,
 }
-
+# save results to file
 with open("results.txt", "w") as result:
     result.write(json.dumps(results, indent=2))
-
+# save model and scalers
 dump(model, "model.joblib")
 dump(scaler, "scaler.joblib")
 dump(min_max, "score_scaler.joblib")
