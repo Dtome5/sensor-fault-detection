@@ -141,9 +141,9 @@ To use in cloud open the sites https://sensor-fault-detection-1.onrender.com and
 ## Performance Metrics
 
 The model's performance metrics include:
-- Accuracy
-- Precision
-- Recall
+- Accuracy:0.95
+- Precision:0.95
+- Recall: ~1
 
 These metrics are saved in `results.txt` after training.
 
