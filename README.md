@@ -24,13 +24,11 @@ The system consists of several key components:
 ## Prerequisites
 
 - Python 3.x
-- UV (Python package installer/runner)
 - Flask and Flask-CORS
 - scikit-learn
 - pandas
 - numpy
 - requests
-- MLflow
 - joblib
 
 ## Installation
@@ -49,7 +47,7 @@ pip install requirements.txt
 
 ## Configuration
 
-1. Create a `config.json` file with the following structure:
+1. The `config.json` file has the following structure:
 ```json
 {
   "model": "model.joblib",
@@ -131,6 +129,7 @@ Values outside these ranges are more likely to be classified as anomalies.
 The system can be run in development mode using local URLs by not setting the `URL` environment variable. For production, set the appropriate environment variables and update the backend server URLs in `load_balance.py`.
 ## Cloud
 To use in cloud open the sites https://sensor-fault-detection-1.onrender.com and https://sensor-fault-detection-dg6k.onrender.com/ and open https://sensor-fault-detection-2.onrender.com the load balancer. Reload to redirect the load balancer to a different instance
+
 ## Files Description
 
 - `model.py`: Trains and saves the machine learning model
@@ -148,10 +147,3 @@ The model's performance metrics include:
 
 These metrics are saved in `results.txt` after training.
 
-## License
-
-[Add your license here]
-
-## Contributing
-
-[Add contribution guidelines here]
