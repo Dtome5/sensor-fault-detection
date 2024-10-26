@@ -100,7 +100,7 @@ This will start:
 - Two API servers on ports 5001 and 5002
 - Load balancer on port 5000
 - The results can be visualized locally on http://127.0.0.1:5000/
-
+![image](sensors.png)
 ## Cloud
 To use in cloud open the sites https://sensor-fault-detection-1.onrender.com and https://sensor-fault-detection-dg6k.onrender.com/ and open https://sensor-fault-detection-2.onrender.com the load balancer. Reload to redirect the load balancer to a different instance
 
